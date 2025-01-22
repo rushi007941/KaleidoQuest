@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="header-title">Pattern generator</h1>
+                <span class="header-author">By rushi</span>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <!-- Pattern Type Card -->
+            <div class="col-md-4">
+                <div class="pattern-card">
+                    <h2 class="card-title">Select pattern type</h2>
+                    <p class="card-subtitle">Select pattern type to generate the pattern</p>
+                    <div class="select-container">
+                        <select class="custom-select">
+                            <option>Circle and Quaters</option>
+                            <option>Triangles</option>
+                            <option>Waves</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Colors Card -->
+                <div class="pattern-card">
+                    <h2 class="card-title">Select colors</h2>
+                    <p class="card-subtitle">Add more colors to generate the pattern</p>
+                    <div class="color-list">
+                        <!-- First default color -->
+                        <div class="color-input">
+                            <input type="color" value="#000000">
+                            <input type="text" value="#000000" readonly>
+                        </div>
+                        <!-- Second default color -->
+                        <div class="color-input">
+                            <input type="color" value="#FF9191">
+                            <input type="text" value="#FF9191" readonly>
+                        </div>
+                    </div>
+                    <button onclick="addNewColor()" class="add-color-btn">+ Add colors</button>
+                </div>
+
+                <!-- Grid Size Card -->
+                <div class="pattern-card">
+                    <h2 class="card-title">Select grid size</h2>
+                    <p class="card-subtitle">Enter the grid size to generate the pattern</p>
+                    <div class="input-container">
+                        <input type="number" class="custome-input select-input" value="4" min="2" max="12" placeholder="Enter grid size">
+                    </div>
+                    <button onclick="generatePattern()" class="generate-btn">Generate Pattern</button>
+                </div>
+            </div>
+
+            <!-- Preview Card -->
+            <div class="col-md-8">
+                <div class="pattern-card preview-card">
+                    <div class="preview-header">
+                        <div>
+                            <h2 class="card-title">Pattern preview</h2>
+                            <p class="card-subtitle">Preview your pattern here</p>
+                        </div>
+                        <div class="preview-actions">
+                            <button class="btn-download">Download SVG</button>
+                            <button class="btn-copy">Copy SVG</button>
+                        </div>
+                    </div>
+                    <div class="preview-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pattern-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>

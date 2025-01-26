@@ -208,13 +208,13 @@ function generatePattern() {
     
     previewContent.innerHTML = '';
     
+    // Create pattern container
     if (selectedPattern === 'Waves') {
         const waveContainer = document.createElement('div');
         waveContainer.className = 'wave-container';
         waveContainer.innerHTML = generateSoundWaves(colors, gridSize);
         previewContent.appendChild(waveContainer);
     } else {
-        // For other patterns, keep the grid layout
         const patternContainer = document.createElement('div');
         patternContainer.className = 'pattern-container';
         patternContainer.style.display = 'grid';
@@ -244,6 +244,124 @@ function generatePattern() {
         } catch (error) {
             console.error('Error generating pattern:', error);
         }
+    }
+
+    // Add click handlers for both download and copy buttons
+    const downloadButton = document.querySelector('.btn-download');
+    const copyButton = document.querySelector('.btn-copy');
+
+    if (downloadButton) {
+        downloadButton.onclick = function() {
+            const currentPattern = previewContent.querySelector('.wave-container, .pattern-container');
+            if (!currentPattern) return;
+
+            let svgContent;
+            if (currentPattern.classList.contains('wave-container')) {
+                svgContent = currentPattern.querySelector('svg').outerHTML;
+            } else {
+                // For grid patterns
+                const cells = currentPattern.querySelectorAll('.pattern-cell');
+                const combinedSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                combinedSvg.setAttribute('viewBox', `0 0 ${gridSize * 100} ${gridSize * 100}`);
+                
+                cells.forEach((cell, index) => {
+                    const row = Math.floor(index / gridSize);
+                    const col = index % gridSize;
+                    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    g.setAttribute('transform', `translate(${col * 100} ${row * 100})`);
+                    
+                    const cellSvg = cell.querySelector('svg');
+                    g.innerHTML = cellSvg.innerHTML;
+                    
+                    // Apply rotation
+                    const rotation = cell.style.transform.match(/rotate\(([-\d.]+)deg\)/);
+                    if (rotation) {
+                        const angle = rotation[1];
+                        g.setAttribute('transform', `${g.getAttribute('transform')} rotate(${angle}, 50, 50)`);
+                    }
+                    
+                    combinedSvg.appendChild(g);
+                });
+                svgContent = combinedSvg.outerHTML;
+            }
+
+            // Create downloadable SVG
+            const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${selectedPattern.toLowerCase()}-pattern.svg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        };
+    }
+
+    if (copyButton) {
+        copyButton.onclick = async function() {
+            const currentPattern = previewContent.querySelector('.wave-container, .pattern-container');
+            if (!currentPattern) return;
+
+            let svgContent;
+            if (currentPattern.classList.contains('wave-container')) {
+                // For wave patterns
+                svgContent = currentPattern.querySelector('svg').outerHTML;
+            } else {
+                // For grid patterns
+                const cells = currentPattern.querySelectorAll('.pattern-cell');
+                const combinedSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                combinedSvg.setAttribute('viewBox', `0 0 ${gridSize * 100} ${gridSize * 100}`);
+                
+                cells.forEach((cell, index) => {
+                    const row = Math.floor(index / gridSize);
+                    const col = index % gridSize;
+                    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    g.setAttribute('transform', `translate(${col * 100} ${row * 100})`);
+                    
+                    const cellSvg = cell.querySelector('svg');
+                    g.innerHTML = cellSvg.innerHTML;
+                    
+                    // Apply rotation
+                    const rotation = cell.style.transform.match(/rotate\(([-\d.]+)deg\)/);
+                    if (rotation) {
+                        const angle = rotation[1];
+                        g.setAttribute('transform', `${g.getAttribute('transform')} rotate(${angle}, 50, 50)`);
+                    }
+                    
+                    combinedSvg.appendChild(g);
+                });
+                svgContent = combinedSvg.outerHTML;
+            }
+
+            try {
+                await navigator.clipboard.writeText(svgContent);
+                
+                // Show success feedback
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copied!';
+                copyButton.style.backgroundColor = '#4CAF50';
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.style.backgroundColor = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy SVG:', err);
+                
+                // Show error feedback
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Failed to copy';
+                copyButton.style.backgroundColor = '#F44336';
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.style.backgroundColor = '';
+                }, 2000);
+            }
+        };
     }
 }
 
@@ -406,6 +524,64 @@ function generateSoundWaves(colors, density) {
     `;
 }
 
+function downloadSVG(filename, svgElement) {
+    if (!svgElement) {
+        console.error('No SVG element found');
+        return;
+    }
+    
+    const svgClone = svgElement.cloneNode(true);
+    const svgData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+     ${svgClone.getAttribute('viewBox') ? `viewBox="${svgClone.getAttribute('viewBox')}"` : ''}
+     version="1.1">
+    ${svgClone.innerHTML}
+</svg>`;
+    
+    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = filename;
+    
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(url);
+}
+
+function createCombinedSVG(container, gridSize) {
+    // Create a new SVG element for the combined pattern
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${gridSize * 100} ${gridSize * 100}`);
+    
+    // Get all cells and combine them into one SVG
+    const cells = container.querySelectorAll('.pattern-cell');
+    cells.forEach((cell, index) => {
+        const row = Math.floor(index / gridSize);
+        const col = index % gridSize;
+        
+        const cellSVG = cell.querySelector('svg');
+        const cellContent = cellSVG.innerHTML;
+        
+        // Create a group for this cell
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('transform', `translate(${col * 100}, ${row * 100})`);
+        
+        // Apply the cell's rotation
+        const rotation = cell.style.transform.match(/-?\d+/);
+        if (rotation) {
+            g.setAttribute('transform', `${g.getAttribute('transform')} rotate(${rotation[0]}, 50, 50)`);
+        }
+        
+        g.innerHTML = cellContent;
+        svg.appendChild(g);
+    });
+    
+    return svg;
+}
+
 // Add or update the CSS
 const style = document.createElement('style');
 style.textContent = `
@@ -444,5 +620,52 @@ style.textContent = `
     .wave-group polyline {
         vector-effect: non-scaling-stroke;
     }
+    
+    .download-svg-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #2E90FA;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+    
+    .download-svg-btn:hover {
+        background-color: #1B7CD3;
+    }
 `;
 document.head.appendChild(style);
+
+// Initialize event listeners once when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const downloadButton = document.querySelector('.btn-download');
+    if (downloadButton) {
+        downloadButton.addEventListener('click', function() {
+            const previewContent = document.querySelector('.preview-content');
+            if (!previewContent) return;
+
+            let svg, filename;
+            
+            if (previewContent.querySelector('.wave-container')) {
+                svg = previewContent.querySelector('.wave-container svg');
+                filename = 'wave-pattern.svg';
+            } else {
+                const patternContainer = previewContent.querySelector('.pattern-container');
+                if (!patternContainer) return;
+                
+                const gridSize = Math.sqrt(patternContainer.children.length);
+                svg = createCombinedSVG(patternContainer, gridSize);
+                filename = 'pattern.svg';
+            }
+
+            if (svg) {
+                downloadSVG(filename, svg);
+            }
+        });
+    }
+});

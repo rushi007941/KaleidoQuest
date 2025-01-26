@@ -78,21 +78,34 @@ function generateCircles(gridSize) {
     return `<svg width="100%" height="100%">${circles}</svg>`;
 }
 
-function generateTriangles(gridSize) {
-    let triangles = '';
-    const height = 40;
-    const spacing = 50;
+function generateTriangles(color1, color2) {
+    const triangleTypes = [
+        // Right triangle at top-left
+        `<path d="M0,0 L50,0 L0,50 Z" fill="${color1}" />`,
+        // Right triangle at top-right
+        `<path d="M50,0 L100,0 L100,50 Z" fill="${color1}" />`,
+        // Right triangle at bottom-right
+        `<path d="M100,50 L100,100 L50,100 Z" fill="${color1}" />`,
+        // Right triangle at bottom-left
+        `<path d="M0,50 L50,100 L0,100 Z" fill="${color1}" />`,
+        // Inverted right triangle at top-left
+        `<path d="M0,0 L50,50 L0,50 Z" fill="${color1}" />`,
+        // Inverted right triangle at top-right
+        `<path d="M100,0 L100,50 L50,50 Z" fill="${color1}" />`,
+        // Inverted right triangle at bottom-right
+        `<path d="M50,50 L100,100 L50,100 Z" fill="${color1}" />`,
+        // Inverted right triangle at bottom-left
+        `<path d="M0,100 L0,50 L50,50 Z" fill="${color1}" />`
+    ];
 
-    for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-            const color = colors[(i + j) % colors.length]; // Cycle through colors
-            const x = spacing * i;
-            const y = spacing * j + height;
-            triangles += `<polygon points="${x},${y} ${x + 20},${y - height} ${x + 40},${y}" fill="${color}" />`;
-        }
-    }
-
-    return `<svg width="100%" height="100%">${triangles}</svg>`;
+    const triangleIndex = Math.floor(Math.random() * triangleTypes.length);
+    
+    return `
+        <svg viewBox="0 0 100 100">
+            <rect x="0" y="0" width="100" height="100" fill="${color2}" />
+            ${triangleTypes[triangleIndex]}
+        </svg>
+    `;
 }
 
 function generateWaves(gridSize) {
@@ -175,103 +188,222 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function generatePattern() {
-    // Get only the visible color inputs (not deleted ones)
     const colorInputs = document.querySelectorAll('.color-input:not(.deleted) input[type="color"]');
     const colors = Array.from(colorInputs)
         .map(input => input.value)
-        .filter(color => color !== '#000000'); // Exclude black color if not explicitly selected
+        .filter(color => color !== '#000000');
     
-    // Validate colors
-    if (!colors.length) {
-        console.error('No colors found');
-        return;
-    }
+    if (!colors.length) return;
+    
+    const patternSelect = document.querySelector('.custom-select');
+    const selectedPattern = patternSelect ? patternSelect.value : 'Circle and Quaters';
     
     const gridSizeInput = document.querySelector('.select-input');
-    if (!gridSizeInput) {
-        console.error('Grid size input not found');
-        return;
-    }
-    
-    let gridSize = parseInt(gridSizeInput.value);
-    
-    if (isNaN(gridSize) || gridSize < 2) {
-        gridSize = 2;
-    } else if (gridSize > 12) {
-        gridSize = 12;
-    }
+    let gridSize = parseInt(gridSizeInput?.value || '4');
+    if (isNaN(gridSize) || gridSize < 2) gridSize = 2;
+    if (gridSize > 12) gridSize = 12;
     
     const previewContent = document.querySelector('.preview-content');
-    if (!previewContent) {
-        console.error('Preview content container not found');
-        return;
-    }
+    if (!previewContent) return;
     
-    // Clear previous pattern
     previewContent.innerHTML = '';
     
-    const patternContainer = document.createElement('div');
-    patternContainer.className = 'pattern-container';
-    
-    patternContainer.style.display = 'grid';
-    patternContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-    
-    try {
-        // Create pattern matrix
-        const matrix = Array(gridSize).fill().map((_, i) => 
-            Array(gridSize).fill().map((_, j) => {
-                const rotation = Math.floor(Math.random() * 4) * 90;
-                const colorCount = colors.length;
-                
-                // Ensure we only use available colors
-                const colorIndex = (i + j) % colorCount;
-                return {
-                    color: colors[colorIndex],
-                    rotation
-                };
-            })
-        );
+    if (selectedPattern === 'Waves') {
+        const waveContainer = document.createElement('div');
+        waveContainer.className = 'wave-container';
+        waveContainer.innerHTML = generateSoundWaves(colors, gridSize);
+        previewContent.appendChild(waveContainer);
+    } else {
+        // For other patterns, keep the grid layout
+        const patternContainer = document.createElement('div');
+        patternContainer.className = 'pattern-container';
+        patternContainer.style.display = 'grid';
+        patternContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
         
-        // Generate cells
-        for (let i = 0; i < gridSize; i++) {
-            for (let j = 0; j < gridSize; j++) {
-                const cell = document.createElement('div');
-                cell.className = 'pattern-cell';
-                
-                const cellColor = colors[(i + j) % colors.length];
-                const nextColor = colors[((i + j + 1) % colors.length)];
-                
-                const svg = `
-                    <svg viewBox="0 0 100 100">
-                        <!-- Top Left Quarter -->
-                        <path d="M0,0 L50,0 L50,50 L0,50 Z" fill="${cellColor}" />
-                        <path d="M0,0 L50,0 A50,50 0 0,1 0,50 Z" fill="${nextColor}" />
-                        
-                        <!-- Top Right Quarter -->
-                        <path d="M50,0 L100,0 L100,50 L50,50 Z" fill="${nextColor}" />
-                        <path d="M100,0 A50,50 0 0,0 50,50 L100,50 Z" fill="${cellColor}" />
-                        
-                        <!-- Bottom Left Quarter -->
-                        <path d="M0,50 L50,50 L50,100 L0,100 Z" fill="${nextColor}" />
-                        <path d="M0,100 A50,50 0 0,0 50,50 L0,50 Z" fill="${cellColor}" />
-                        
-                        <!-- Bottom Right Quarter -->
-                        <path d="M50,50 L100,50 L100,100 L50,100 Z" fill="${cellColor}" />
-                        <path d="M100,100 A50,50 0 0,1 50,50 L100,50 Z" fill="${nextColor}" />
-                    </svg>
-                `;
-                
-                cell.innerHTML = svg;
-                cell.style.transform = `rotate(${matrix[i][j].rotation}deg)`;
-                patternContainer.appendChild(cell);
+        try {
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'pattern-cell';
+                    
+                    const shuffledColors = [...colors].sort(() => Math.random() - 0.5);
+                    
+                    let svg;
+                    if (selectedPattern === 'Circle and Quaters') {
+                        svg = generateCircleQuarters(shuffledColors[0], shuffledColors[1]);
+                    } else if (selectedPattern === 'Triangles') {
+                        svg = generateGeometricTriangles(shuffledColors);
+                    }
+                    
+                    cell.innerHTML = svg;
+                    cell.style.transform = `rotate(${Math.floor(Math.random() * 4) * 90}deg)`;
+                    patternContainer.appendChild(cell);
+                }
             }
+            previewContent.appendChild(patternContainer);
+        } catch (error) {
+            console.error('Error generating pattern:', error);
+        }
+    }
+}
+
+function generateGeometricTriangles(colors) {
+    const patterns = [
+        // Basic triangles
+        () => `
+            <path d="M0,0 L100,0 L0,100 Z" fill="${colors[0]}" />
+            <path d="M100,0 L100,100 L0,100 Z" fill="${colors[1]}" />
+        `,
+        // Diagonal split
+        () => `
+            <path d="M0,0 L100,0 L50,50 Z" fill="${colors[0]}" />
+            <path d="M100,0 L100,100 L50,50 Z" fill="${colors[1]}" />
+            <path d="M0,100 L100,100 L50,50 Z" fill="${colors[0]}" />
+            <path d="M0,0 L0,100 L50,50 Z" fill="${colors[1]}" />
+        `,
+        // Striped triangle
+        () => {
+            const stripes = [];
+            for (let i = 0; i < 10; i++) {
+                stripes.push(`
+                    <path d="M${i * 10},0 L${(i + 1) * 10},0 L${(i + 1) * 10},${(i + 1) * 10} L${i * 10},${i * 10} Z" 
+                          fill="${i % 2 === 0 ? colors[0] : colors[1]}" />
+                `);
+            }
+            return stripes.join('');
+        },
+        // Corner triangles
+        () => `
+            <path d="M0,0 L50,0 L0,50 Z" fill="${colors[0]}" />
+            <path d="M50,0 L100,0 L100,50 Z" fill="${colors[1]}" />
+            <path d="M0,50 L0,100 L50,100 Z" fill="${colors[1]}" />
+            <path d="M100,50 L50,100 L100,100 Z" fill="${colors[0]}" />
+        `
+    ];
+
+    const selectedPattern = patterns[Math.floor(Math.random() * patterns.length)];
+    
+    return `
+        <svg viewBox="0 0 100 100">
+            <rect x="0" y="0" width="100" height="100" fill="${colors[2] || '#FFFFFF'}" />
+            ${selectedPattern()}
+        </svg>
+    `;
+}
+
+function generateCircleQuarters(color1, color2) {
+    return `
+        <svg viewBox="0 0 100 100">
+            <!-- Top Left Quarter -->
+            <path d="M0,0 L50,0 L50,50 L0,50 Z" fill="${color1}" />
+            <path d="M0,0 L50,0 A50,50 0 0,1 0,50 Z" fill="${color2}" />
+            
+            <!-- Top Right Quarter -->
+            <path d="M50,0 L100,0 L100,50 L50,50 Z" fill="${color2}" />
+            <path d="M100,0 A50,50 0 0,0 50,50 L100,50 Z" fill="${color1}" />
+            
+            <!-- Bottom Left Quarter -->
+            <path d="M0,50 L50,50 L50,100 L0,100 Z" fill="${color2}" />
+            <path d="M0,100 A50,50 0 0,0 50,50 L0,50 Z" fill="${color1}" />
+            
+            <!-- Bottom Right Quarter -->
+            <path d="M50,50 L100,50 L100,100 L50,100 Z" fill="${color1}" />
+            <path d="M100,100 A50,50 0 0,1 50,50 L100,50 Z" fill="${color2}" />
+        </svg>
+    `;
+}
+
+function generateSoundWaves(colors, density) {
+    const waveTypes = {
+        sine: (x, freq, amp, phase) => 
+            Math.sin(x * freq + phase) * amp,
+        
+        double: (x, freq, amp, phase) => 
+            Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2 + phase) * (amp / 2),
+        
+        compressed: (x, freq, amp, phase) => 
+            Math.sin(x * freq + phase) * amp * Math.exp(-Math.pow((x - 400) / 200, 2)),
+        
+        ripple: (x, freq, amp, phase) => 
+            Math.sin(x * freq + phase) * amp * (1 + Math.sin(x * 0.01) * 0.5)
+    };
+
+    const waveTypes_arr = Object.values(waveTypes);
+    const selectedWave = waveTypes_arr[Math.floor(Math.random() * waveTypes_arr.length)];
+    
+    const numWaves = 20 + (density * 5);
+    const lines = [];
+    
+    const baseFreq = 0.01;
+    const baseAmp = 20;
+    
+    // Create color groups for different wave sections
+    const colorGroups = Math.ceil(numWaves / colors.length);
+    
+    for (let i = 0; i < numWaves; i++) {
+        const points = [];
+        const frequency = baseFreq + (Math.random() * 0.005);
+        const amplitude = baseAmp + (Math.random() * 10);
+        const phase = i * 0.2;
+        
+        // Select color based on wave group
+        const colorIndex = Math.floor(Math.random() * colors.length);
+        const lineColor = colors[colorIndex];
+        
+        for (let x = 0; x <= 800; x += 1) {
+            const y = 100 + selectedWave(x, frequency, amplitude, phase);
+            points.push(`${x},${y}`);
         }
         
-        previewContent.appendChild(patternContainer);
-        
-    } catch (error) {
-        console.error('Error generating pattern:', error);
+        lines.push(`
+            <polyline 
+                points="${points.join(' ')}"
+                fill="none"
+                stroke="${lineColor}"
+                stroke-width="0.5"
+                stroke-opacity="${0.1 + (i / numWaves) * 0.9}"
+            />
+        `);
     }
+    
+    // Add crossing lines with different colors
+    const crossLines = [];
+    const numCrossLines = Math.floor(density * 2);
+    
+    for (let i = 0; i < numCrossLines; i++) {
+        const points = [];
+        const frequency = baseFreq * 2;
+        const amplitude = baseAmp * 0.5;
+        const phase = Math.random() * Math.PI * 2;
+        
+        // Random color for each crossing line
+        const crossLineColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        for (let x = 0; x <= 800; x += 1) {
+            const y = 100 + selectedWave(x, frequency, amplitude, phase);
+            points.push(`${x},${y}`);
+        }
+        
+        crossLines.push(`
+            <polyline 
+                points="${points.join(' ')}"
+                fill="none"
+                stroke="${crossLineColor}"
+                stroke-width="0.3"
+                stroke-opacity="0.3"
+                transform="rotate(${Math.random() * 30 - 15}, 400, 100)"
+            />
+        `);
+    }
+
+    return `
+        <svg viewBox="0 0 800 200">
+            <g class="wave-group">
+                ${lines.join('')}
+                ${crossLines.join('')}
+            </g>
+        </svg>
+    `;
 }
 
 // Add or update the CSS
@@ -292,114 +424,25 @@ style.textContent = `
         align-items: center;
         justify-content: center;
         transition: transform 0.3s ease;
+        background: white;
     }
     
-    .pattern-cell svg {
+    .wave-container {
         width: 100%;
-        height: 100%;
+        margin: 20px auto;
+        background: white;
+        overflow: hidden;
+        padding: 20px;
     }
-
-    .grid-size {
-        width: 100%;
-        padding: 16px 20px;
-        background: #FFFFFF;
-        border: 1px solid #D0D5DD;
-        border-radius: 12px;
-        font-family: Inter;
-        font-size: 32px;
-        font-weight: 500;
-        color: #13233B;
-        appearance: none;
-    }
-
-    .grid-size:focus {
-        outline: none;
-        border-color: #2E90FA;
-    }
-
-    /* Remove number input spinners */
-    .grid-size::-webkit-inner-spin-button,
-    .grid-size::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    .grid-size {
-        -moz-appearance: textfield;
-    }
-
-    .card-title {
-        font-family: Inter;
-        font-size: 24px;
-        font-weight: 600;
-        color: #13233B;
-        margin-bottom: 8px;
-    }
-
-    .card-subtitle {
-        font-family: Inter;
-        font-size: 14px;
-        color: #4D5761;
-        margin-bottom: 24px;
-    }
-
-    .input-container {
-        position: relative;
-        margin-bottom: 16px;
-    }
-
-    .select-input[type="number"] {
+    
+    .wave-container svg {
         width: 100%;
         height: auto;
-        padding: 12px 16px;
-        background: #FFFFFF;
-        border: 1px solid #D0D5DD;
-        border-radius: 12px;
-        color: #13233B;
-        font-family: Inter;
-        font-size: 16px;
-        font-weight: 400;
-        appearance: none;
-        cursor: pointer;
-        outline: none;
+        display: block;
     }
-
-    .select-input[type="number"]::-webkit-inner-spin-button,
-    .select-input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    .select-input[type="number"] {
-        -moz-appearance: textfield;
-    }
-
-    .select-input:focus {
-        outline: none;
-        border-color: #2E90FA;
-    }
-
-    .generate-btn {
-        width: 100%;
-        padding: 10px 18px;
-        background: #2E90FA;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        font-family: Inter;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        margin-top: 16px;
-    }
-
-    .generate-btn:hover {
-        background: #1B7CD3;
-    }
-
-    .generate-btn:active {
-        background: #1570C4;
+    
+    .wave-group polyline {
+        vector-effect: non-scaling-stroke;
     }
 `;
 document.head.appendChild(style);

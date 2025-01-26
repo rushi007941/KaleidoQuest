@@ -129,3 +129,26 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+/* Add these navbar styles to your existing style.css */
+.navbar {
+    padding: 16px 0;
+    border-bottom: 1px solid #E4E7EC;
+}
+
+.navbar-brand {
+    color: #13233B;
+    font-weight: 700;
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.navbar-brand:hover {
+    color: #13233B;
+}
+
+/* If you want to add a logo/icon later */
+.navbar-brand img {
+    width: 32px;
+    height: 32px;
+}

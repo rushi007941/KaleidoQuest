@@ -165,69 +165,122 @@ window.onload = function() {
     });
 };
 
-// Function to generate the pattern
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click event listener to generate button
+    const generateBtn = document.querySelector('.generate-btn');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', generatePattern);
+    }
+});
+
 function generatePattern() {
-    // Get selected colors
-    const colorInputs = document.querySelectorAll('.color-input input[type="color"]');
-    const colors = Array.from(colorInputs).map(input => input.value);
+    // Get only the visible color inputs (not deleted ones)
+    const colorInputs = document.querySelectorAll('.color-input:not(.deleted) input[type="color"]');
+    const colors = Array.from(colorInputs)
+        .map(input => input.value)
+        .filter(color => color !== '#000000'); // Exclude black color if not explicitly selected
     
-    // Get grid size - Updated class name to match HTML
+    // Validate colors
+    if (!colors.length) {
+        console.error('No colors found');
+        return;
+    }
+    
     const gridSizeInput = document.querySelector('.select-input');
+    if (!gridSizeInput) {
+        console.error('Grid size input not found');
+        return;
+    }
+    
     let gridSize = parseInt(gridSizeInput.value);
     
-    // Validate grid size
     if (isNaN(gridSize) || gridSize < 2) {
         gridSize = 2;
     } else if (gridSize > 12) {
         gridSize = 12;
     }
     
-    // Get the preview container
     const previewContent = document.querySelector('.preview-content');
+    if (!previewContent) {
+        console.error('Preview content container not found');
+        return;
+    }
+    
+    // Clear previous pattern
     previewContent.innerHTML = '';
     
-    // Create pattern container
     const patternContainer = document.createElement('div');
     patternContainer.className = 'pattern-container';
     
-    // Set up grid
     patternContainer.style.display = 'grid';
     patternContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
     
-    // Generate cells
-    for (let i = 0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'pattern-cell';
+    try {
+        // Create pattern matrix
+        const matrix = Array(gridSize).fill().map((_, i) => 
+            Array(gridSize).fill().map((_, j) => {
+                const rotation = Math.floor(Math.random() * 4) * 90;
+                const colorCount = colors.length;
+                
+                // Ensure we only use available colors
+                const colorIndex = (i + j) % colorCount;
+                return {
+                    color: colors[colorIndex],
+                    rotation
+                };
+            })
+        );
         
-        const svg = `
-            <svg viewBox="0 0 100 100">
-                <path d="M0,0 L50,0 A50,50 0 0,1 0,50 Z" fill="${colors[0]}" />
-                <path d="M100,0 L100,50 A50,50 0 0,1 50,0 Z" fill="${colors[1]}" />
-                <path d="M100,100 L50,100 A50,50 0 0,1 100,50 Z" fill="${colors[2] || colors[0]}" />
-                <path d="M0,100 L0,50 A50,50 0 0,1 50,100 Z" fill="${colors[1]}" />
-            </svg>
-        `;
+        // Generate cells
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const cell = document.createElement('div');
+                cell.className = 'pattern-cell';
+                
+                const cellColor = colors[(i + j) % colors.length];
+                const nextColor = colors[((i + j + 1) % colors.length)];
+                
+                const svg = `
+                    <svg viewBox="0 0 100 100">
+                        <!-- Top Left Quarter -->
+                        <path d="M0,0 L50,0 L50,50 L0,50 Z" fill="${cellColor}" />
+                        <path d="M0,0 L50,0 A50,50 0 0,1 0,50 Z" fill="${nextColor}" />
+                        
+                        <!-- Top Right Quarter -->
+                        <path d="M50,0 L100,0 L100,50 L50,50 Z" fill="${nextColor}" />
+                        <path d="M100,0 A50,50 0 0,0 50,50 L100,50 Z" fill="${cellColor}" />
+                        
+                        <!-- Bottom Left Quarter -->
+                        <path d="M0,50 L50,50 L50,100 L0,100 Z" fill="${nextColor}" />
+                        <path d="M0,100 A50,50 0 0,0 50,50 L0,50 Z" fill="${cellColor}" />
+                        
+                        <!-- Bottom Right Quarter -->
+                        <path d="M50,50 L100,50 L100,100 L50,100 Z" fill="${cellColor}" />
+                        <path d="M100,100 A50,50 0 0,1 50,50 L100,50 Z" fill="${nextColor}" />
+                    </svg>
+                `;
+                
+                cell.innerHTML = svg;
+                cell.style.transform = `rotate(${matrix[i][j].rotation}deg)`;
+                patternContainer.appendChild(cell);
+            }
+        }
         
-        cell.innerHTML = svg;
+        previewContent.appendChild(patternContainer);
         
-        // Random rotation
-        const rotations = [0, 90, 180, 270];
-        const randomRotation = rotations[Math.floor(Math.random() * rotations.length)];
-        cell.style.transform = `rotate(${randomRotation}deg)`;
-        
-        patternContainer.appendChild(cell);
+    } catch (error) {
+        console.error('Error generating pattern:', error);
     }
-    
-    previewContent.appendChild(patternContainer);
 }
 
-// Add CSS for the pattern
+// Add or update the CSS
 const style = document.createElement('style');
 style.textContent = `
     .pattern-container {
         width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
+        max-width: 600px;
+        margin: 20px auto;
         aspect-ratio: 1;
         gap: 0;
     }
@@ -238,6 +291,7 @@ style.textContent = `
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: transform 0.3s ease;
     }
     
     .pattern-cell svg {

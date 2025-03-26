@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join KaleidoQuest - Pattern Generator</title>
+    <link rel="stylesheet" href="email-collect.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <a href="get-started.html" class="back-button">←</a>
+            
+            <div class="content">
+                <h1>Welcome to KaleidoQuest</h1>
+                <p class="subtitle">Enter your email to get started with our pattern generator</p>
+                
+                <form id="emailForm" onsubmit="handleSubmit(event)">
+                    <div class="input-group">
+                        <input 
+                            type="email" 
+                            id="email" 
+                            placeholder="Enter your email"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="submit-btn">Continue to Tool →</button>
+                </form>
+
+                <p class="privacy-note">We respect your privacy and will never share your email.</p>
+            </div>
+        </div>
+    </div>
+    <script src="email-collect.js"></script>
+</body>
+</html> 

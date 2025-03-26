@@ -1,14 +1,33 @@
 .pattern-card {
-    background: #FFFFFF;
+    background: #333333;
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
-    border: 1px solid #E4E7EC;
-    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+    border: 1px solid #464646;
+    transition: 0.2s;
+
+}
+
+.pattern-card:hover {
+    background: #333333;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid #464646;
+    box-shadow: 8px 8px 0px #2e90fa;
+}
+
+.pattern-preview-card {
+    background: #333333;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 1px solid #464646;
+
 }
 
 .card-title {
-    color: #13233B;
+    color: #ffffff;
     font-family: Inter;
     font-size: 20px;
     font-weight: 600;
@@ -16,7 +35,7 @@
 }
 
 .card-subtitle {
-    color: #718097;
+    color: #7a7a7a;
     font-family: Inter;
     font-size: 14px;
     font-weight: 400;
@@ -96,8 +115,8 @@
     width: 100%;
     align-items: center;
     padding: 10px 14px;
-    background: #FFFFFF;
-    border: 1px solid #D0D5DD;
+    background: #292929;
+    border: 1px solid #444444;
     border-radius: 8px;
     gap: 12px;
     transition: all 0.3s ease;
@@ -112,17 +131,19 @@
 
 input[type="color"] {
     width: 24px;
-    height: 24px;
+    
     padding: 0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    background-color: #292929;
 }
 
 input[type="text"] {
     flex-grow: 1;
     border: none;
-    color: #13233B;
+    color: #ffffff;
+    background-color: #292929;
     font-family: Inter;
     font-size: 14px;
     outline: none;
@@ -140,19 +161,20 @@ input[type="text"] {
 .add-color-btn {
     width: 100%;
     padding: 10px 16px;
-    background: #FFFFFF;
-    border: 1px solid #2E90FA;
+    background: #555555;
+    border: 1px solid #383838;
     border-radius: 8px;
-    color: #2E90FA;
+    color: #ffffff;
     font-family: Inter;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+
 }
 
 .add-color-btn:hover {
-    background: rgba(46, 144, 250, 0.04);
+    background: #ffffff21;
 }
 
 .add-color-btn:active {
@@ -234,7 +256,14 @@ input[type="text"] {
 /* Preview card specific styling */
 .preview-card {
     height: 100%;
+    transition: 0.2s;
 }
+
+.preview-card:hover {
+    height: 100%;
+    box-shadow: 8px 8px 0px #2e90fa;
+}
+
 
 .preview-header {
     display: flex;
@@ -263,15 +292,15 @@ input[type="text"] {
 }
 
 .btn-copy {
-    background: #FFFFFF;
-    border: 1px solid #2E90FA;
-    color: #2E90FA;
+    background: #555555;
+    border: 1px solid #555555;
+    color: #ffffff;
 }
 
 .preview-content {
     width: 100%;
     height: calc(100% - 100px);
-    background: #F9FAFB;
+    background: #414141;
     border-radius: 12px;
 } 
 
@@ -279,21 +308,21 @@ input[type="text"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 2rem;
-    background-color: #fff;
+    padding: 1rem 22rem;
+    background-color: #151515;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
     text-decoration: none;
     padding: 0.5rem 1rem;
 }
 
 .docs-link {
-    color: #333;
+    color: #ffffff;
     text-decoration: none;
     font-size: 1rem;
     padding: 0.5rem 1rem;

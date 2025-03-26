@@ -1,0 +1,249 @@
+/* Base Styles */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #060605 !important;
+    color: white;
+}
+
+main {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-dark {
+    background-color: #060605 !important;
+}
+
+/* Background Pattern */
+main::before {
+    content: '';
+    position: fixed;
+    width: 2311px;
+    height: 1984px;
+    top: -77px;
+    left: 40%;
+    background: url('images/background.svg') no-repeat;
+    transform: rotate(31deg);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 30%;
+}
+
+/* Left Section */
+.left-section {
+    padding: 50px 120px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Logo */
+.logo {
+    font-family: 'Impact', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.32px;
+    margin-bottom: 80px;
+}
+
+/* Hero Section */
+.hero-section {
+    margin-bottom: 100px;
+}
+
+.subtitle {
+    opacity: 0.5;
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.main-title {
+    font-family: 'Impact', sans-serif;
+    font-size: 64px;
+    letter-spacing: -2.88px;
+    line-height: 1.2;
+    margin-bottom: 28px;
+}
+
+.join-button {
+    width: 325px;
+    padding: 11px 24px;
+    background: white;
+    color: #060605;
+    border: none;
+    border-radius: 3px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: impact;
+}
+
+.join-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* About Section */
+.about-section {
+    margin-bottom: 100px;
+}
+
+.about-section h3 {
+    color: #a6a6a6;
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 8px;
+}
+
+.about-section p {
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.use-cases {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    max-width: 337px;
+}
+
+.use-cases span {
+    font-size: 14px;
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    background: #d9d9d9;
+    border-radius: 50%;
+}
+
+/* Gallery Grid */
+.gallery-grid {
+    margin-bottom: 100px;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+/* Contact Section */
+.contact-section {
+    margin-bottom: 40px;
+}
+
+.contact-section h3 {
+    color: #a6a6a6;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.contact-section p {
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.contact-section hr {
+    width: 178px;
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 28px 0;
+}
+
+.social-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.social-icons img {
+    width: 24px;
+    height: 24px;
+    transition: opacity 0.3s;
+}
+
+.social-icons a:hover img {
+    opacity: 0.8;
+}
+
+/* Right Section - Cards */
+.right-section {
+    position: fixed;
+    left: 50%;
+}
+
+.cards-container {
+    position: relative;
+    width: 370px;
+    height: 385px;
+    margin: 169px auto 0;
+}
+
+.card {
+    position: absolute;
+    background: black;
+    border: 0.86px solid #423434;
+    border-radius: 15.55px;
+    overflow: hidden;
+}
+
+.card-content {
+    padding: 36px 24px;
+    background: linear-gradient(180deg, rgba(255,189,189,1) 0%, rgba(255,226,226,1) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.card-content h2 {
+    font-family: 'Impact', sans-serif;
+    font-size: 31.1px;
+    letter-spacing: -1.87px;
+    line-height: 21.1px;
+    margin-bottom: 15.55px;
+}
+
+.card-content p {
+    font-size: 10.4px;
+    letter-spacing: -0.62px;
+    line-height: 11.9px;
+    max-width: 154.82px;
+}
+
+.top-card {
+    width: 320px;
+    height: 160px;
+    top: 0;
+    left: 25px;
+}
+
+.middle-card {
+    width: 370px;
+    height: 185px;
+    top: 100px;
+    left: 0;
+}
+
+.bottom-card {
+    width: 320px;
+    height: 160px;
+    top: 225px;
+    left: 25px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .left-section {
+        padding: 48px 24px;
+    }
+
+    .join-button {
+        width: 100%;
+    }
+
+    .cards-container {
+        margin: 40px auto;
+        transform: scale(0.8);
+    }
+}

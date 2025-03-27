@@ -1,31 +1,38 @@
 .pattern-card {
-    background: #333333;
+    background: #141414;
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
-    border: 1px solid #464646;
-    transition: 0.2s;
+    border: 1px solid #262626;
+    box-shadow: inset 5px 5px 170px 0px #000000;
+    transition: 0.5s;
 
 }
 
 .pattern-card:hover {
-    background: #333333;
+    background: #141414;
     border-radius: 8px;
     padding: 24px;
     margin-bottom: 24px;
-    border: 1px solid #464646;
+    border: 1px solid #262626;
     box-shadow: 8px 8px 0px #2e90fa;
+    transform: scale(1.02);
 }
 
 .pattern-preview-card {
-    background: #333333;
+    background: #141414;
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
     border: 1px solid #464646;
 
 }
+.pattern-preview-card:hover {
 
+    border-radius: 8px;
+
+
+}
 .card-title {
     color: #ffffff;
     font-family: Inter;
@@ -257,11 +264,13 @@ input[type="text"] {
 .preview-card {
     height: 100%;
     transition: 0.2s;
+    box-shadow: inset 5px 5px 170px 0px #000000;
 }
 
 .preview-card:hover {
     height: 100%;
     box-shadow: 8px 8px 0px #2e90fa;
+    transform: scale(1.02);
 }
 
 
@@ -308,7 +317,7 @@ input[type="text"] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 22rem;
+    padding: 1rem 16rem;
     background-color: #151515;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
